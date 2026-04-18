@@ -1,0 +1,149 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Médiuns</h1>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <i class="pi pi-plus"></i> Novo médium
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="search-bar">
+      <input type="text" [(ngModel)]="searchNome" placeholder="Buscar por nome..." (keyup.enter)="search()" />
+      <button class="btn btn-primary" (click)="search()"><i class="pi pi-search"></i></button>
+      <button class="btn btn-outline" (click)="clearSearch()" *ngIf="searchNome">Limpar</button>
+    </div>
+
+    <div *ngIf="loading" class="loading-msg">Carregando...</div>
+
+    <table *ngIf="!loading">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Cargo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of mediuns">
+          <td>{{ m.nome }} {{ m.sobrenome }}</td>
+          <td>{{ m.cpf }}</td>
+          <td>{{ m.telefone }}</td>
+          <td>{{ m.email }}</td>
+          <td>
+            <span class="badge badge-purple" *ngIf="m.cargos">{{ m.cargos.descricao }}</span>
+          </td>
+          <td class="actions">
+            <button class="btn btn-outline" (click)="openEdit(m)"><i class="pi pi-pencil"></i></button>
+            <button class="btn btn-danger" (click)="confirmDelete(m.id!)"><i class="pi pi-trash"></i></button>
+          </td>
+        </tr>
+        <tr *ngIf="mediuns.length === 0">
+          <td colspan="6" class="empty">Nenhum médium encontrado.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="goTo(page-1)" [disabled]="page === 0">&#8249;</button>
+      <button *ngFor="let p of pages()" [class.active]="p === page" (click)="goTo(p)">{{ p + 1 }}</button>
+      <button (click)="goTo(page+1)" [disabled]="page === totalPages - 1">&#8250;</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cadastro/Edição -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2>{{ editingId ? 'Editar' : 'Novo' }} Médium</h2>
+
+    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nome *</label>
+        <input [(ngModel)]="form.nome" required />
+      </div>
+      <div class="form-group">
+        <label>Sobrenome *</label>
+        <input [(ngModel)]="form.sobrenome" required />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>CPF *</label>
+        <input [(ngModel)]="form.cpf" placeholder="000.000.000-00" />
+      </div>
+      <div class="form-group">
+        <label>Data de Nascimento *</label>
+        <input type="date" [(ngModel)]="form.dataNascimento" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" [(ngModel)]="form.email" />
+      </div>
+      <div class="form-group">
+        <label>Telefone</label>
+        <input [(ngModel)]="form.telefone" placeholder="(00) 00000-0000" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Sexo</label>
+        <select [(ngModel)]="form.sexo">
+          <option value="">Selecione</option>
+          <option value="M">Masculino</option>
+          <option value="F">Feminino</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cargo</label>
+        <select (change)="cargoSelected($any($event.target).value)">
+          <option value="">Selecione</option>
+          <option *ngFor="let c of cargos" [value]="c.id" [selected]="form.cargos?.id === c.id">{{ c.descricao }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nome da Mãe</label>
+        <input [(ngModel)]="form.nomeMae" />
+      </div>
+      <div class="form-group">
+        <label>Nome do Pai</label>
+        <input [(ngModel)]="form.nomePai" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Endereço</label>
+      <input [(ngModel)]="form.endereco" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" (click)="showModal=false">Cancelar</button>
+      <button class="btn btn-primary" (click)="save()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmação Delete -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="showDeleteModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2>Confirmar exclusão</h2>
+    <p>Tem certeza que deseja excluir este médium? Esta ação não pode ser desfeita.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" (click)="showDeleteModal=false">Cancelar</button>
+      <button class="btn btn-danger" (click)="doDelete()">Excluir</button>
+    </div>
+  </div>
+</div>
+

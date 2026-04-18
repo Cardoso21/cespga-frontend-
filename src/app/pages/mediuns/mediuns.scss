@@ -1,0 +1,17 @@
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+
+  input { flex: 1; padding: 0.6rem 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; outline: none; &:focus { border-color: var(--primary-light); } }
+}
+
+.actions { display: flex; gap: 0.5rem; }
+
+.empty { text-align: center; color: var(--text-light); padding: 2rem !important; }
+
+.loading-msg { text-align: center; padding: 2rem; color: var(--text-light); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+
+.modal { max-width: 680px; max-height: 90vh; overflow-y: auto; }

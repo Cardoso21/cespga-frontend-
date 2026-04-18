@@ -1,0 +1,36 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="sidebar-header">
+    <div class="logo-mark">✦</div>
+    <span class="logo-text" *ngIf="!collapsed">CESPGA</span>
+    <button class="toggle-btn" (click)="toggleCollapse()">
+      <i [class]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"></i>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <i class="pi pi-home"></i>
+      <span *ngIf="!collapsed">Dashboard</span>
+    </a>
+    <a routerLink="/mediuns" routerLinkActive="active" class="nav-item">
+      <i class="pi pi-users"></i>
+      <span *ngIf="!collapsed">Médiuns</span>
+    </a>
+    <a routerLink="/agenda" routerLinkActive="active" class="nav-item">
+      <i class="pi pi-calendar"></i>
+      <span *ngIf="!collapsed">Agenda</span>
+    </a>
+    <a routerLink="/cargos" routerLinkActive="active" class="nav-item">
+      <i class="pi pi-briefcase"></i>
+      <span *ngIf="!collapsed">Cargos</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="nav-item logout-btn" (click)="logout()">
+      <i class="pi pi-sign-out"></i>
+      <span *ngIf="!collapsed">Sair</span>
+    </button>
+  </div>
+</aside>
+

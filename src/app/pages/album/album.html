@@ -1,0 +1,60 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-left">
+      <a routerLink="/agenda" class="back-link"><i class="pi pi-arrow-left"></i></a>
+      <h1>Álbum de Fotos</h1>
+    </div>
+  </div>
+
+  <div class="card upload-section">
+    <h2 class="section-title">Adicionar foto</h2>
+    <div class="upload-area">
+      <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" style="display:none" />
+      <label for="fileInput" class="file-label">
+        <i class="pi pi-upload"></i>
+        <span>{{ selectedFile ? selectedFile.name : 'Clique para selecionar uma imagem' }}</span>
+      </label>
+      <input type="text" [(ngModel)]="descricao" placeholder="Descrição (opcional)" class="desc-input" />
+      <button class="btn btn-primary" (click)="upload()" [disabled]="!selectedFile || uploading">
+        {{ uploading ? 'Enviando...' : 'Enviar foto' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-msg">Carregando fotos...</div>
+
+  <div class="photos-grid" *ngIf="!loading">
+    <div class="photo-card" *ngFor="let f of fotos">
+      <img [src]="f.url" [alt]="f.descricao || 'Foto do evento'" (click)="openLightbox(f.url)" loading="lazy" />
+      <div class="photo-overlay">
+        <span class="photo-desc" *ngIf="f.descricao">{{ f.descricao }}</span>
+        <button class="delete-btn" (click)="confirmDelete(f.id!)">
+          <i class="pi pi-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-photos" *ngIf="fotos.length === 0">
+      <i class="pi pi-images"></i>
+      <p>Nenhuma foto neste álbum ainda.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" *ngIf="lightboxUrl" (click)="lightboxUrl=null">
+  <img [src]="lightboxUrl" alt="Foto ampliada" />
+</div>
+
+<!-- Modal Confirmação Delete -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="showDeleteModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2>Excluir foto</h2>
+    <p>Tem certeza que deseja excluir esta foto?</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" (click)="showDeleteModal=false">Cancelar</button>
+      <button class="btn btn-danger" (click)="doDelete()">Excluir</button>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,70 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i { font-size: 1.5rem; }
+
+  &.purple { background: #ede9fe; color: var(--primary); }
+  &.gold { background: #fef9c3; color: #92400e; }
+}
+
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--primary-dark); line-height: 1; }
+.stat-label { font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem; }
+
+.section-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1rem; }
+
+.evento-destaque {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  > i { font-size: 2rem; color: var(--primary-light); flex-shrink: 0; }
+  > div { flex: 1; }
+}
+
+.evento-nome { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.evento-data { font-size: 0.85rem; color: var(--text-light); margin-top: 0.2rem; }
+.evento-desc { font-size: 0.9rem; color: var(--text-light); margin-top: 0.4rem; }
+
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.quick-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-decoration: none;
+  color: var(--text);
+  text-align: center;
+  transition: all 0.2s;
+
+  i { font-size: 2rem; color: var(--primary); }
+  span { font-weight: 600; font-size: 0.9rem; }
+
+  &:hover { box-shadow: 0 8px 32px rgba(107, 33, 168, 0.2); transform: translateY(-2px); }
+}
+
+.mt-2 { margin-top: 1.5rem; }

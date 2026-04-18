@@ -1,1 +1,103 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'primeicons/primeicons.css';
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #6b21a8;
+  --primary-light: #a855f7;
+  --primary-dark: #4c1d95;
+  --accent: #d4af37;
+  --bg: #f8f4ff;
+  --surface: #ffffff;
+  --text: #1e1b2e;
+  --text-light: #6b7280;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(107, 33, 168, 0.1);
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.page-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
+  cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+
+  &-primary { background: var(--primary); color: white; &:hover { background: var(--primary-dark); } }
+  &-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); &:hover { background: var(--primary); color: white; } }
+  &-danger { background: var(--danger); color: white; &:hover { opacity: 0.9; } }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.form-group {
+  display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem;
+  label { font-size: 0.85rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
+  input, select, textarea {
+    padding: 0.7rem 1rem; border: 2px solid #e5e7eb; border-radius: 8px;
+    font-size: 0.95rem; transition: border-color 0.2s; outline: none;
+    &:focus { border-color: var(--primary-light); }
+  }
+}
+
+.badge {
+  display: inline-block; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+  &-purple { background: #ede9fe; color: var(--primary); }
+  &-green { background: #dcfce7; color: var(--success); }
+  &-red { background: #fee2e2; color: var(--danger); }
+  &-gold { background: #fef9c3; color: #92400e; }
+}
+
+.page-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;
+  h1 { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); }
+}
+
+table {
+  width: 100%; border-collapse: collapse;
+  th { text-align: left; padding: 0.75rem 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); border-bottom: 2px solid #f3f4f6; }
+  td { padding: 0.9rem 1rem; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; }
+  tr:hover td { background: #faf5ff; }
+}
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+
+.modal {
+  background: white; border-radius: var(--radius); padding: 2rem;
+  width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  h2 { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+}
+
+.alert {
+  padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem;
+  &-error { background: #fee2e2; color: var(--danger); }
+  &-success { background: #dcfce7; color: var(--success); }
+}
+
+.pagination {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;
+  button {
+    padding: 0.4rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem;
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &.active { background: var(--primary); color: white; border-color: var(--primary); }
+    &:hover:not(:disabled):not(.active) { background: var(--bg); }
+  }
+}

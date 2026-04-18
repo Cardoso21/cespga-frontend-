@@ -1,0 +1,52 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <div class="stats-grid">
+    <div class="card stat-card">
+      <div class="stat-icon purple"><i class="pi pi-users"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ totalMediuns }}</div>
+        <div class="stat-label">Médiuns cadastrados</div>
+      </div>
+    </div>
+
+    <div class="card stat-card">
+      <div class="stat-icon gold"><i class="pi pi-calendar"></i></div>
+      <div class="stat-info">
+        <div class="stat-value">{{ totalEventos }}</div>
+        <div class="stat-label">Eventos na agenda</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-2" *ngIf="proximoEvento">
+    <h2 class="section-title">Próximo evento</h2>
+    <div class="evento-destaque">
+      <i class="pi pi-calendar-clock"></i>
+      <div>
+        <div class="evento-nome">{{ proximoEvento.nome }}</div>
+        <div class="evento-data">{{ proximoEvento.dataEvento | slice:0:10 }}</div>
+        <div class="evento-desc" *ngIf="proximoEvento.descricao">{{ proximoEvento.descricao }}</div>
+      </div>
+      <a [routerLink]="['/agenda', proximoEvento.id, 'album']" class="btn btn-outline">Ver álbum</a>
+    </div>
+  </div>
+
+  <div class="quick-links mt-2">
+    <a routerLink="/mediuns" class="card quick-link">
+      <i class="pi pi-users"></i>
+      <span>Gerenciar Médiuns</span>
+    </a>
+    <a routerLink="/agenda" class="card quick-link">
+      <i class="pi pi-calendar"></i>
+      <span>Ver Agenda</span>
+    </a>
+    <a routerLink="/cargos" class="card quick-link">
+      <i class="pi pi-briefcase"></i>
+      <span>Gerenciar Cargos</span>
+    </a>
+  </div>
+</div>
+
