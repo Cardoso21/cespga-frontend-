@@ -1,149 +1,181 @@
+<p-toast />
+<p-confirmDialog />
+
 <div class="page-container">
   <div class="page-header">
     <h1>Médiuns</h1>
-    <button class="btn btn-primary" (click)="openCreate()">
-      <i class="pi pi-plus"></i> Novo médium
-    </button>
+    <p-button label="Novo médium" icon="pi pi-plus" (onClick)="openCreate()" />
   </div>
 
-  <div class="card">
+  <p-card>
     <div class="search-bar">
-      <input type="text" [(ngModel)]="searchNome" placeholder="Buscar por nome..." (keyup.enter)="search()" />
-      <button class="btn btn-primary" (click)="search()"><i class="pi pi-search"></i></button>
-      <button class="btn btn-outline" (click)="clearSearch()" *ngIf="searchNome">Limpar</button>
+      <input pInputText type="text" [(ngModel)]="searchNome" placeholder="Buscar por nome..."
+             (keyup.enter)="search()" />
+      <p-button icon="pi pi-search" (onClick)="search()" />
+      <p-select
+        [options]="[{label: 'Todos os cargos', value: null}, ...cargoOptions]"
+        [(ngModel)]="filterCargoId"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Filtrar por cargo"
+        (onChange)="onCargoFilter($event.value)"
+        styleClass="filter-select"
+      />
+      @if (searchNome || filterCargoId) {
+        <p-button label="Limpar" severity="secondary" [outlined]="true" (onClick)="clearSearch()" />
+      }
     </div>
 
-    <div *ngIf="loading" class="loading-msg">Carregando...</div>
-
-    <table *ngIf="!loading">
-      <thead>
+    <p-table [value]="mediuns" [loading]="loading" styleClass="p-datatable-striped p-datatable-gridlines">
+      <ng-template pTemplate="header">
         <tr>
           <th>Nome</th>
-          <th>CPF</th>
-          <th>Telefone</th>
-          <th>E-mail</th>
+          <th class="hide-mobile">CPF</th>
+          <th class="hide-mobile">Telefone</th>
+          <th class="hide-tablet">E-mail</th>
           <th>Cargo</th>
           <th>Ações</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let m of mediuns">
-          <td>{{ m.nome }} {{ m.sobrenome }}</td>
-          <td>{{ m.cpf }}</td>
-          <td>{{ m.telefone }}</td>
-          <td>{{ m.email }}</td>
+      </ng-template>
+      <ng-template pTemplate="body" let-m>
+        <tr>
           <td>
-            <span class="badge badge-purple" *ngIf="m.cargos">{{ m.cargos.descricao }}</span>
+            <div class="medium-name-cell">
+              <div class="medium-avatar">{{ m.nome[0] }}</div>
+              <span>{{ m.nome }} {{ m.sobrenome }}</span>
+            </div>
           </td>
-          <td class="actions">
-            <button class="btn btn-outline" (click)="openEdit(m)"><i class="pi pi-pencil"></i></button>
-            <button class="btn btn-danger" (click)="confirmDelete(m.id!)"><i class="pi pi-trash"></i></button>
+          <td class="hide-mobile">{{ m.cpf }}</td>
+          <td class="hide-mobile">{{ m.telefone }}</td>
+          <td class="hide-tablet">{{ m.email }}</td>
+          <td>
+            @if (m.cargos) {
+              <p-tag [value]="m.cargos.descricao" severity="secondary" />
+            }
+          </td>
+          <td class="actions-cell">
+            <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar" tooltipPosition="top" (onClick)="openEdit(m)" />
+            <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" pTooltip="Excluir" tooltipPosition="top" (onClick)="confirmDelete(m.id!)" />
           </td>
         </tr>
-        <tr *ngIf="mediuns.length === 0">
-          <td colspan="6" class="empty">Nenhum médium encontrado.</td>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <i class="pi pi-users"></i>
+              <p class="empty-title">Nenhum médium encontrado</p>
+              <p class="empty-sub">Tente ajustar os filtros ou cadastre um novo médium.</p>
+            </div>
+          </td>
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
+    </p-table>
 
-    <div class="pagination" *ngIf="totalPages > 1">
-      <button (click)="goTo(page-1)" [disabled]="page === 0">&#8249;</button>
-      <button *ngFor="let p of pages()" [class.active]="p === page" (click)="goTo(p)">{{ p + 1 }}</button>
-      <button (click)="goTo(page+1)" [disabled]="page === totalPages - 1">&#8250;</button>
-    </div>
-  </div>
+    @if (totalElements > pageSize) {
+      <p-paginator
+        [first]="page * pageSize"
+        [rows]="pageSize"
+        [totalRecords]="totalElements"
+        (onPageChange)="onPageChange($event)"
+        styleClass="mt-3"
+      />
+    }
+  </p-card>
 </div>
 
-<!-- Modal Cadastro/Edição -->
-<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <h2>{{ editingId ? 'Editar' : 'Novo' }} Médium</h2>
+<p-dialog
+  [(visible)]="showModal"
+  [header]="editingId ? 'Editar Médium' : 'Novo Médium'"
+  [modal]="true"
+  [style]="{ width: '640px' }"
+  [draggable]="false"
+>
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+  }
 
-    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Nome *</label>
-        <input [(ngModel)]="form.nome" required />
-      </div>
-      <div class="form-group">
-        <label>Sobrenome *</label>
-        <input [(ngModel)]="form.sobrenome" required />
-      </div>
+  <div class="form-row">
+    <div class="field">
+      <label>Nome *</label>
+      <input pInputText [(ngModel)]="form.nome" class="w-full" />
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>CPF *</label>
-        <input [(ngModel)]="form.cpf" placeholder="000.000.000-00" />
-      </div>
-      <div class="form-group">
-        <label>Data de Nascimento *</label>
-        <input type="date" [(ngModel)]="form.dataNascimento" />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" [(ngModel)]="form.email" />
-      </div>
-      <div class="form-group">
-        <label>Telefone</label>
-        <input [(ngModel)]="form.telefone" placeholder="(00) 00000-0000" />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Sexo</label>
-        <select [(ngModel)]="form.sexo">
-          <option value="">Selecione</option>
-          <option value="M">Masculino</option>
-          <option value="F">Feminino</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Cargo</label>
-        <select (change)="cargoSelected($any($event.target).value)">
-          <option value="">Selecione</option>
-          <option *ngFor="let c of cargos" [value]="c.id" [selected]="form.cargos?.id === c.id">{{ c.descricao }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Nome da Mãe</label>
-        <input [(ngModel)]="form.nomeMae" />
-      </div>
-      <div class="form-group">
-        <label>Nome do Pai</label>
-        <input [(ngModel)]="form.nomePai" />
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Endereço</label>
-      <input [(ngModel)]="form.endereco" />
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-outline" (click)="showModal=false">Cancelar</button>
-      <button class="btn btn-primary" (click)="save()">Salvar</button>
+    <div class="field">
+      <label>Sobrenome *</label>
+      <input pInputText [(ngModel)]="form.sobrenome" class="w-full" />
     </div>
   </div>
-</div>
 
-<!-- Modal Confirmação Delete -->
-<div class="modal-overlay" *ngIf="showDeleteModal" (click)="showDeleteModal=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <h2>Confirmar exclusão</h2>
-    <p>Tem certeza que deseja excluir este médium? Esta ação não pode ser desfeita.</p>
-    <div class="modal-actions">
-      <button class="btn btn-outline" (click)="showDeleteModal=false">Cancelar</button>
-      <button class="btn btn-danger" (click)="doDelete()">Excluir</button>
+  <div class="form-row">
+    <div class="field">
+      <label>CPF *</label>
+      <p-inputmask mask="999.999.999-99" [(ngModel)]="form.cpf" placeholder="000.000.000-00" styleClass="w-full" />
+    </div>
+    <div class="field">
+      <label>Data de Nascimento *</label>
+      <input pInputText type="date" [(ngModel)]="form.dataNascimento" class="w-full" />
     </div>
   </div>
-</div>
 
+  <div class="form-row">
+    <div class="field">
+      <label>E-mail</label>
+      <input pInputText type="email" [(ngModel)]="form.email" class="w-full" />
+    </div>
+    <div class="field">
+      <label>Telefone</label>
+      <p-inputmask mask="(99) 99999-9999" [(ngModel)]="form.telefone" placeholder="(00) 00000-0000" styleClass="w-full" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label>Sexo</label>
+      <p-select
+        [(ngModel)]="form.sexo"
+        [options]="[{label: 'Masculino', value: 'M'}, {label: 'Feminino', value: 'F'}]"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="field">
+      <label>Cargo</label>
+      <p-select
+        [(ngModel)]="selectedCargoId"
+        [options]="cargoOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione"
+        styleClass="w-full"
+      />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="field">
+      <label>Nome da Mãe</label>
+      <input pInputText [(ngModel)]="form.nomeMae" class="w-full" />
+    </div>
+    <div class="field">
+      <label>Nome do Pai</label>
+      <input pInputText [(ngModel)]="form.nomePai" class="w-full" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Endereço</label>
+    <input pInputText [(ngModel)]="form.endereco" class="w-full" />
+  </div>
+
+  <div class="field">
+    <label>Data de entrada *</label>
+    <input pInputText type="date" [(ngModel)]="form.dataCadastro" class="w-full" />
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="showModal = false" />
+    <p-button label="Salvar" icon="pi pi-check" (onClick)="save()" />
+  </ng-template>
+</p-dialog>

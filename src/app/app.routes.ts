@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)
@@ -17,7 +17,6 @@ export const routes: Routes = [
   },
   {
     path: '',
-    canActivate: [authGuard],
     loadComponent: () => import('./shared/components/shell/shell').then(m => m.ShellComponent),
     children: [
       {
@@ -26,6 +25,7 @@ export const routes: Routes = [
       },
       {
         path: 'mediuns',
+        canActivate: [authGuard],
         loadComponent: () => import('./pages/mediuns/mediuns').then(m => m.MediunsComponent)
       },
       {
@@ -33,15 +33,25 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/agenda/agenda').then(m => m.AgendaComponent)
       },
       {
+        path: 'fotos',
+        loadComponent: () => import('./pages/fotos/fotos').then(m => m.FotosComponent)
+      },
+      {
         path: 'agenda/:id/album',
         loadComponent: () => import('./pages/album/album').then(m => m.AlbumComponent)
       },
       {
         path: 'cargos',
+        canActivate: [authGuard],
         loadComponent: () => import('./pages/cargos/cargos').then(m => m.CargosComponent)
+      },
+      {
+        path: 'usuarios',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)
       }
     ]
   },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', loadComponent: () => import('./pages/not-found/not-found').then(m => m.NotFoundComponent) }
 ];
 

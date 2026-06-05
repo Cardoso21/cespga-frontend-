@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
-import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-forgot-password',
-  imports: [NgIf, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, CardModule, InputTextModule, ButtonModule, MessageModule],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.scss',
 })
@@ -35,4 +38,3 @@ export class ForgotPasswordComponent {
     });
   }
 }
-

@@ -17,6 +17,11 @@ export class AgendaService {
     return this.http.get<PagedResponse<Agenda>>(this.url, { params });
   }
 
+  findByNome(nome: string, page = 0, size = 9): Observable<PagedResponse<Agenda>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PagedResponse<Agenda>>(`${this.url}/findByNome/${encodeURIComponent(nome)}`, { params });
+  }
+
   findById(id: number): Observable<Agenda> {
     return this.http.get<Agenda>(`${this.url}/${id}`);
   }
@@ -31,6 +36,17 @@ export class AgendaService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
+  }
+
+  listarTodasFotos(): Observable<FotoEvento[]> {
+    return this.http.get<FotoEvento[]>(this.fotosUrl);
+  }
+
+  uploadFotoGeral(arquivo: File, descricao?: string): Observable<FotoEvento> {
+    const form = new FormData();
+    form.append('arquivo', arquivo);
+    if (descricao) form.append('descricao', descricao);
+    return this.http.post<FotoEvento>(this.fotosUrl, form);
   }
 
   listarFotos(agendaId: number): Observable<FotoEvento[]> {

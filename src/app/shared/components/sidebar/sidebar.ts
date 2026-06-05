@@ -1,25 +1,40 @@
-import { Component } from '@angular/core';
-import { NgIf } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgIf, RouterLink, RouterLinkActive],
+  imports: [AsyncPipe, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
 export class SidebarComponent {
-  collapsed = false;
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private auth: AuthService) {}
+  collapsed = false;
+  mobileOpen = false;
+  loggedIn$ = this.auth.loggedIn$;
 
   toggleCollapse() {
     this.collapsed = !this.collapsed;
   }
 
+  toggleMobile() {
+    this.mobileOpen = !this.mobileOpen;
+  }
+
+  closeMobile() {
+    this.mobileOpen = false;
+  }
+
   logout() {
     this.auth.logout();
+  }
+
+  login() {
+    this.router.navigate(['/login']);
   }
 }
 

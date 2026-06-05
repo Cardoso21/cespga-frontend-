@@ -11,5 +11,5 @@ export interface FotoEvento {
   url: string;
   descricao?: string;
   dataUpload?: string;
-  agendaId: number;
+  agendaId?: number;
 }

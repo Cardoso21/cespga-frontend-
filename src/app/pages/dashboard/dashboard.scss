@@ -5,7 +5,7 @@
   margin-bottom: 1.5rem;
 }
 
-.stat-card {
+.stat-content {
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -22,25 +22,38 @@
 
   i { font-size: 1.5rem; }
 
-  &.purple { background: #ede9fe; color: var(--primary); }
-  &.gold { background: #fef9c3; color: #92400e; }
+  &.purple { background: #dbeafe; color: var(--primary); }
+  &.gold { background: #e0f2fe; color: #0369a1; }
 }
 
 .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary-dark); line-height: 1; }
 .stat-label { font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem; }
 
-.section-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1rem; }
-
 .evento-destaque {
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 4px solid var(--primary);
 
-  > i { font-size: 2rem; color: var(--primary-light); flex-shrink: 0; }
+  > i { font-size: 2rem; color: var(--primary); flex-shrink: 0; }
   > div { flex: 1; }
 }
 
 .evento-nome { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
+.skeleton-evento {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.skeleton-evento-info {
+  flex: 1;
+}
 .evento-data { font-size: 0.85rem; color: var(--text-light); margin-top: 0.2rem; }
 .evento-desc { font-size: 0.9rem; color: var(--text-light); margin-top: 0.4rem; }
 
@@ -50,21 +63,35 @@
   gap: 1rem;
 }
 
-.quick-link {
+.quick-link-card {
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: var(--radius);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(37,99,235,0.18);
+  }
+
+  &.ql-mediuns ::ng-deep .p-card { border-top: 3px solid #2563eb; }
+  &.ql-agenda  ::ng-deep .p-card { border-top: 3px solid #0891b2; }
+  &.ql-cargos  ::ng-deep .p-card { border-top: 3px solid #7c3aed; }
+}
+
+::ng-deep .quick-link-inner .p-card-body {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   padding: 2rem;
-  text-decoration: none;
-  color: var(--text);
   text-align: center;
-  transition: all 0.2s;
 
-  i { font-size: 2rem; color: var(--primary); }
+  i { font-size: 2.5rem; }
   span { font-weight: 600; font-size: 0.9rem; }
-
-  &:hover { box-shadow: 0 8px 32px rgba(107, 33, 168, 0.2); transform: translateY(-2px); }
 }
 
-.mt-2 { margin-top: 1.5rem; }
+.ql-mediuns ::ng-deep .quick-link-inner i { color: #2563eb; }
+.ql-agenda  ::ng-deep .quick-link-inner i { color: #0891b2; }
+.ql-cargos  ::ng-deep .quick-link-inner i { color: #7c3aed; }

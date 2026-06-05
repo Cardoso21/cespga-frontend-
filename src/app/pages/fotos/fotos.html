@@ -3,10 +3,7 @@
 
 <div class="page-container">
   <div class="page-header">
-    <div class="header-left">
-      <p-button icon="pi pi-arrow-left" severity="secondary" [outlined]="true" (onClick)="goBack()" />
-      <h1>Álbum de Fotos</h1>
-    </div>
+    <h1>Fotos</h1>
   </div>
 
   @if (loggedIn$ | async) {
@@ -40,7 +37,7 @@
     <div class="photos-grid">
       @for (f of fotos; track f.id) {
         <div class="photo-card" (click)="openLightbox(f.url)">
-          <img [src]="f.url" [alt]="f.descricao || 'Foto do evento'" loading="lazy" />
+          <img [src]="f.url" [alt]="f.descricao || 'Foto'" loading="lazy" />
           <div class="photo-overlay">
             @if (f.descricao) {
               <span class="photo-desc">{{ f.descricao }}</span>
@@ -61,8 +58,8 @@
       @if (fotos.length === 0) {
         <div class="empty-photos">
           <i class="pi pi-images"></i>
-          <p class="empty-title">Nenhuma foto neste álbum ainda</p>
-          <p class="empty-sub">Adicione fotos do evento usando o formulário acima.</p>
+          <p class="empty-title">Nenhuma foto ainda</p>
+          <p class="empty-sub">As fotos adicionadas aparecerão aqui.</p>
         </div>
       }
     </div>

@@ -1,18 +1,20 @@
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: var(--primary-dark);
+  background: linear-gradient(180deg, #559cee 0%, #c7dcf8 100%);
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  box-shadow: 6px 0 30px rgba(0, 0, 0, 0.6);
 
   &.collapsed {
     width: 68px;
 
     .sidebar-header { justify-content: center; }
     .nav-item { justify-content: center; }
-    .logout-btn { justify-content: center; }
   }
 }
 
@@ -23,7 +25,7 @@
   padding: 1.5rem 1rem;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 
-  .logo-mark { font-size: 1.5rem; color: var(--accent); flex-shrink: 0; }
+  .logo-img { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; border-radius: 6px; }
   .logo-text { font-size: 1.1rem; font-weight: 800; color: white; letter-spacing: 0.1em; flex: 1; }
 
   .toggle-btn {
@@ -39,6 +41,20 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+
+  a, button {
+    animation: slideInLeft 0.3s ease both;
+  }
+  a:nth-child(1), button:nth-child(1) { animation-delay: 0.05s; }
+  a:nth-child(2), button:nth-child(2) { animation-delay: 0.10s; }
+  a:nth-child(3), button:nth-child(3) { animation-delay: 0.15s; }
+  a:nth-child(4), button:nth-child(4) { animation-delay: 0.20s; }
+  a:nth-child(5), button:nth-child(5) { animation-delay: 0.25s; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 .nav-item {
@@ -48,16 +64,41 @@
 
   i { font-size: 1rem; flex-shrink: 0; }
 
-  &:hover, &.active { background: rgba(255,255,255,0.12); color: white; }
-  &.active { background: var(--primary); color: white; }
-}
-
-.sidebar-footer {
-  padding: 0.5rem;
-  border-top: 1px solid rgba(255,255,255,0.1);
-
-  .logout-btn {
-    width: 100%; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.6);
-    &:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+  &:hover { background: rgba(29,78,216,0.1); color: var(--primary-dark); }
+  &.active {
+    background: rgba(29,78,216,0.12);
+    color: var(--primary-dark);
+    font-weight: 700;
+    border-left: 3px solid var(--primary-dark);
+    padding-left: calc(1rem - 3px);
   }
 }
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+
+    &.mobile-open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.mobile-overlay {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+  }
+}
+

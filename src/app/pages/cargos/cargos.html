@@ -1,50 +1,64 @@
+<p-toast />
+<p-confirmDialog />
+
 <div class="page-container">
   <div class="page-header">
     <h1>Cargos</h1>
-    <button class="btn btn-primary" (click)="openCreate()">
-      <i class="pi pi-plus"></i> Novo cargo
-    </button>
+    <p-button label="Novo cargo" icon="pi pi-plus" (onClick)="openCreate()" />
   </div>
 
-  <div *ngIf="loading" class="loading-msg">Carregando...</div>
-
-  <div class="card" *ngIf="!loading">
-    <table>
-      <thead>
+  <p-card>
+    <p-table [value]="cargos" [loading]="loading" styleClass="p-datatable-striped p-datatable-gridlines">
+      <ng-template pTemplate="header">
         <tr>
-          <th>#</th>
+          <th style="width: 80px">#</th>
           <th>Descrição</th>
+          <th style="width: 120px">Ações</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let c of cargos">
+      </ng-template>
+      <ng-template pTemplate="body" let-c>
+        <tr>
           <td>{{ c.id }}</td>
           <td>{{ c.descricao }}</td>
+          <td class="actions-cell">
+            <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar" tooltipPosition="top" (onClick)="openEdit(c)" />
+            <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" pTooltip="Excluir" tooltipPosition="top" (onClick)="confirmDelete(c.id!)" />
+          </td>
         </tr>
-        <tr *ngIf="cargos.length === 0">
-          <td colspan="2" class="empty">Nenhum cargo cadastrado.</td>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3">
+            <div class="empty-state">
+              <i class="pi pi-briefcase"></i>
+              <p class="empty-title">Nenhum cargo cadastrado</p>
+              <p class="empty-sub">Clique em "Novo cargo" para começar.</p>
+            </div>
+          </td>
         </tr>
-      </tbody>
-    </table>
-  </div>
+      </ng-template>
+    </p-table>
+  </p-card>
 </div>
 
-<!-- Modal Cadastro -->
-<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <h2>Novo Cargo</h2>
+<p-dialog
+  [(visible)]="showModal"
+  [header]="editingId ? 'Editar Cargo' : 'Novo Cargo'"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+>
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+  }
 
-    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-
-    <div class="form-group">
-      <label>Descrição *</label>
-      <input [(ngModel)]="form.descricao" placeholder="Ex: Zelador, Médium, Dirigente..." required />
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-outline" (click)="showModal=false">Cancelar</button>
-      <button class="btn btn-primary" (click)="save()">Salvar</button>
-    </div>
+  <div class="field">
+    <label>Descrição *</label>
+    <input pInputText [(ngModel)]="form.descricao" placeholder="Ex: Zelador, Médium, Dirigente..." class="w-full" />
   </div>
-</div>
 
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="showModal = false" />
+    <p-button [label]="editingId ? 'Atualizar' : 'Salvar'" icon="pi pi-check" (onClick)="save()" />
+  </ng-template>
+</p-dialog>

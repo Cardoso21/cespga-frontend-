@@ -1,88 +1,124 @@
+<p-toast />
+<p-confirmDialog />
+
 <div class="page-container">
   <div class="page-header">
     <h1>Agenda</h1>
-    <button class="btn btn-primary" (click)="openCreate()">
-      <i class="pi pi-plus"></i> Novo evento
-    </button>
+    @if (loggedIn$ | async) {
+      <p-button label="Novo evento" icon="pi pi-plus" (onClick)="openCreate()" />
+    }
   </div>
 
-  <div *ngIf="loading" class="loading-msg">Carregando...</div>
+  <div class="search-bar">
+    <input pInputText type="text" [(ngModel)]="searchNome" placeholder="Buscar por nome do evento..."
+           (keyup.enter)="search()" />
+    <p-button icon="pi pi-search" (onClick)="search()" />
+    @if (searchNome) {
+      <p-button label="Limpar" severity="secondary" [outlined]="true" (onClick)="clearSearch()" />
+    }
+  </div>
 
-  <div class="events-grid" *ngIf="!loading">
-    <div class="card event-card" *ngFor="let e of eventos">
-      <div class="event-date">
-        <span class="day">{{ e.dataEvento | slice:8:10 }}</span>
-        <span class="month">{{ monthName(e.dataEvento) }}</span>
-      </div>
-      <div class="event-info">
-        <div class="event-name">{{ e.nome }}</div>
-        <div class="event-desc" *ngIf="e.descricao">{{ e.descricao }}</div>
-        <div class="event-status" *ngIf="e.situacao">
-          <span class="badge badge-purple">{{ e.situacao.descricao }}</span>
+  @if (loading) {
+    <div class="loading-center">
+      <p-progressSpinner />
+    </div>
+  }
+
+  @if (!loading) {
+    <div class="events-grid">
+      @for (e of eventos; track e.id) {
+        <p-card [styleClass]="situacaoClass(e.situacao?.descricao)">
+          <div class="event-card-content">
+            <div class="event-date">
+              <span class="day">{{ e.dataEvento | slice:8:10 }}</span>
+              <span class="month">{{ monthName(e.dataEvento) }}</span>
+            </div>
+            <div class="event-info">
+              <div class="event-name">{{ e.nome }}</div>
+              <div class="event-friendly-date">{{ friendlyDate(e.dataEvento) }}</div>
+              @if (e.descricao) {
+                <div class="event-desc">{{ e.descricao }}</div>
+              }
+              @if (e.situacao) {
+                <p-tag [value]="e.situacao.descricao" [severity]="situacaoSeverity(e.situacao.descricao)" styleClass="mt-1" />
+              }
+            </div>
+            <div class="event-actions">
+              <p-button
+                icon="pi pi-images"
+                severity="secondary"
+                [outlined]="true"
+                size="small"
+                title="Álbum de fotos"
+                (onClick)="goToAlbum(e.id!)"
+              />
+              @if (loggedIn$ | async) {
+                <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" (onClick)="openEdit(e)" />
+                <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" (onClick)="confirmDelete(e.id!)" />
+              }
+            </div>
+          </div>
+        </p-card>
+      }
+
+      @if (eventos.length === 0) {
+        <div class="empty-events">
+          <i class="pi pi-calendar-times"></i>
+          <p class="empty-title">Nenhum evento encontrado</p>
+          <p class="empty-sub">Tente ajustar a busca ou cadastre um novo evento.</p>
         </div>
-      </div>
-      <div class="event-actions">
-        <a [routerLink]="['/agenda', e.id, 'album']" class="btn btn-outline" title="Álbum de fotos">
-          <i class="pi pi-images"></i>
-        </a>
-        <button class="btn btn-outline" (click)="openEdit(e)" title="Editar">
-          <i class="pi pi-pencil"></i>
-        </button>
-        <button class="btn btn-danger" (click)="confirmDelete(e.id!)" title="Excluir">
-          <i class="pi pi-trash"></i>
-        </button>
-      </div>
+      }
     </div>
 
-    <div class="empty-events" *ngIf="eventos.length === 0">
-      <i class="pi pi-calendar"></i>
-      <p>Nenhum evento cadastrado.</p>
-    </div>
-  </div>
-
-  <div class="pagination" *ngIf="totalPages > 1">
-    <button (click)="goTo(page-1)" [disabled]="page === 0">&#8249;</button>
-    <button *ngFor="let p of pages()" [class.active]="p === page" (click)="goTo(p)">{{ p + 1 }}</button>
-    <button (click)="goTo(page+1)" [disabled]="page === totalPages - 1">&#8250;</button>
-  </div>
+    @if (totalElements > pageSize) {
+      <p-paginator
+        [first]="page * pageSize"
+        [rows]="pageSize"
+        [totalRecords]="totalElements"
+        (onPageChange)="onPageChange($event)"
+        styleClass="mt-3"
+      />
+    }
+  }
 </div>
 
-<!-- Modal Cadastro/Edição -->
-<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <h2>{{ editingId ? 'Editar' : 'Novo' }} Evento</h2>
+<p-dialog
+  [(visible)]="showModal"
+  [header]="editingId ? 'Editar Evento' : 'Novo Evento'"
+  [modal]="true"
+  [style]="{ width: '720px' }"
+  [draggable]="false"
+>
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+  }
 
-    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
-
-    <div class="form-group">
-      <label>Nome do evento *</label>
-      <input [(ngModel)]="form.nome" required />
-    </div>
-    <div class="form-group">
-      <label>Data do evento *</label>
-      <input type="date" [(ngModel)]="form.dataEvento" required />
-    </div>
-    <div class="form-group">
-      <label>Descrição</label>
-      <textarea [(ngModel)]="form.descricao" rows="3"></textarea>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-outline" (click)="showModal=false">Cancelar</button>
-      <button class="btn btn-primary" (click)="save()">Salvar</button>
-    </div>
+  <div class="field">
+    <label>Nome do evento *</label>
+    <input pInputText [(ngModel)]="form.nome" class="w-full" />
   </div>
-</div>
-
-<!-- Modal Confirmação Delete -->
-<div class="modal-overlay" *ngIf="showDeleteModal" (click)="showDeleteModal=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <h2>Confirmar exclusão</h2>
-    <p>Tem certeza que deseja excluir este evento?</p>
-    <div class="modal-actions">
-      <button class="btn btn-outline" (click)="showDeleteModal=false">Cancelar</button>
-      <button class="btn btn-danger" (click)="doDelete()">Excluir</button>
-    </div>
+  <div class="field">
+    <label>Data do evento *</label>
+    <input type="date" [(ngModel)]="form.dataEvento" class="w-full date-input" />
   </div>
-</div>
+  <div class="field">
+    <label>Descrição</label>
+    <textarea pTextarea [(ngModel)]="form.descricao" rows="3" class="w-full"></textarea>
+  </div>
+  <div class="field">
+    <label>Situação</label>
+    <p-select
+      [(ngModel)]="form.situacao"
+      [options]="situacoes"
+      optionLabel="descricao"
+      placeholder="Selecione a situação"
+      styleClass="w-full"
+      appendTo="body"
+    />
+  </div>
 
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="showModal = false" />
+    <p-button label="Salvar" icon="pi pi-check" (onClick)="save()" />
+  </ng-template>
+</p-dialog>

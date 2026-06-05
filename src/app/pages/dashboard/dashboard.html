@@ -4,49 +4,81 @@
   </div>
 
   <div class="stats-grid">
-    <div class="card stat-card">
-      <div class="stat-icon purple"><i class="pi pi-users"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ totalMediuns }}</div>
-        <div class="stat-label">Médiuns cadastrados</div>
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon purple"><i class="pi pi-users"></i></div>
+        <div class="stat-info">
+          @if (loadingMediuns) {
+            <p-skeleton width="4rem" height="2rem" styleClass="mb-1" />
+            <p-skeleton width="8rem" height="1rem" />
+          } @else {
+            <div class="stat-value">{{ totalMediuns }}</div>
+            <div class="stat-label">Médiuns cadastrados</div>
+          }
+        </div>
       </div>
-    </div>
+    </p-card>
 
-    <div class="card stat-card">
-      <div class="stat-icon gold"><i class="pi pi-calendar"></i></div>
-      <div class="stat-info">
-        <div class="stat-value">{{ totalEventos }}</div>
-        <div class="stat-label">Eventos na agenda</div>
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon gold"><i class="pi pi-calendar"></i></div>
+        <div class="stat-info">
+          @if (loadingEventos) {
+            <p-skeleton width="4rem" height="2rem" styleClass="mb-1" />
+            <p-skeleton width="8rem" height="1rem" />
+          } @else {
+            <div class="stat-value">{{ totalEventos }}</div>
+            <div class="stat-label">Eventos na agenda</div>
+          }
+        </div>
       </div>
-    </div>
+    </p-card>
   </div>
 
-  <div class="card mt-2" *ngIf="proximoEvento">
-    <h2 class="section-title">Próximo evento</h2>
-    <div class="evento-destaque">
-      <i class="pi pi-calendar-clock"></i>
-      <div>
-        <div class="evento-nome">{{ proximoEvento.nome }}</div>
-        <div class="evento-data">{{ proximoEvento.dataEvento | slice:0:10 }}</div>
-        <div class="evento-desc" *ngIf="proximoEvento.descricao">{{ proximoEvento.descricao }}</div>
+  @if (loadingEventos) {
+    <p-card styleClass="mt-2">
+      <div class="skeleton-evento">
+        <p-skeleton shape="circle" size="3rem" />
+        <div class="skeleton-evento-info">
+          <p-skeleton width="12rem" height="1.2rem" styleClass="mb-2" />
+          <p-skeleton width="6rem" height="1rem" styleClass="mb-1" />
+          <p-skeleton width="16rem" height="0.9rem" />
+        </div>
       </div>
-      <a [routerLink]="['/agenda', proximoEvento.id, 'album']" class="btn btn-outline">Ver álbum</a>
-    </div>
-  </div>
+    </p-card>
+  } @else if (proximoEvento) {
+    <p-card styleClass="mt-2" header="Próximo evento">
+      <div class="evento-destaque">
+        <i class="pi pi-calendar-clock"></i>
+        <div>
+          <div class="evento-nome">{{ proximoEvento.nome }}</div>
+          <div class="evento-data">{{ proximoEvento.dataEvento | slice:0:10 }}</div>
+          @if (proximoEvento.descricao) {
+            <div class="evento-desc">{{ proximoEvento.descricao }}</div>
+          }
+        </div>
+        <p-button label="Ver álbum" severity="secondary" [outlined]="true"
+                  [routerLink]="['/agenda', proximoEvento.id, 'album']" />
+      </div>
+    </p-card>
+  }
 
   <div class="quick-links mt-2">
-    <a routerLink="/mediuns" class="card quick-link">
-      <i class="pi pi-users"></i>
-      <span>Gerenciar Médiuns</span>
-    </a>
-    <a routerLink="/agenda" class="card quick-link">
-      <i class="pi pi-calendar"></i>
-      <span>Ver Agenda</span>
-    </a>
-    <a routerLink="/cargos" class="card quick-link">
-      <i class="pi pi-briefcase"></i>
-      <span>Gerenciar Cargos</span>
-    </a>
+    @if (loggedIn$ | async) {
+      <a routerLink="/mediuns" class="quick-link-card ql-mediuns">
+        <p-card styleClass="quick-link-inner">
+          <i class="pi pi-users"></i>
+          <span>Gerenciar Médiuns</span>
+        </p-card>
+      </a>
+    }
+@if (loggedIn$ | async) {
+      <a routerLink="/cargos" class="quick-link-card ql-cargos">
+        <p-card styleClass="quick-link-inner">
+          <i class="pi pi-briefcase"></i>
+          <span>Gerenciar Cargos</span>
+        </p-card>
+      </a>
+    }
   </div>
 </div>
-

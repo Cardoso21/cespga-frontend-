@@ -1,7 +1,35 @@
+<p-toast />
+<p-confirmDialog />
 <div class="app-layout">
   <app-sidebar></app-sidebar>
-  <main class="main-content">
-    <router-outlet></router-outlet>
-  </main>
+  <div class="content-wrapper">
+    <header class="mobile-header">
+      <button class="hamburger" (click)="toggleMobileSidebar()">
+        <i class="pi pi-bars"></i>
+      </button>
+      <img src="logo.jpeg" alt="CESPGA" class="mobile-logo" />
+      <span class="mobile-title">CESPGA</span>
+    </header>
+    <div class="topbar">
+      @if (loggedIn$ | async) {
+        <div class="topbar-user">
+          <div class="user-avatar">{{ initials }}</div>
+          <span class="user-name">{{ username }}</span>
+          <button class="topbar-btn logout-btn" (click)="logout()">
+            <i class="pi pi-sign-out"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      } @else {
+        <button class="topbar-btn login-btn" (click)="login()">
+          <i class="pi pi-sign-in"></i>
+          <span>Entrar</span>
+        </button>
+      }
+    </div>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>
 

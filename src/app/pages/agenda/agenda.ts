@@ -1,51 +1,110 @@
-import { Component, OnInit } from '@angular/core';
-import { NgIf, NgFor, SlicePipe } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { SlicePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageModule } from 'primeng/message';
+import { PaginatorModule } from 'primeng/paginator';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectModule } from 'primeng/select';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { AsyncPipe } from '@angular/common';
 import { AgendaService } from '../../core/services/agenda.service';
+import { AuthService } from '../../core/services/auth.service';
+import { SituacaoService, Situacao } from '../../core/services/situacao.service';
 import { Agenda } from '../../core/models/agenda.model';
 
 @Component({
   selector: 'app-agenda',
-  imports: [NgIf, NgFor, SlicePipe, FormsModule, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    AsyncPipe, SlicePipe, FormsModule,
+    CardModule, DialogModule, ButtonModule, InputTextModule, TextareaModule,
+    TagModule, ToastModule, ConfirmDialogModule, MessageModule,
+    PaginatorModule, ProgressSpinnerModule, SelectModule
+  ],
   templateUrl: './agenda.html',
   styleUrl: './agenda.scss',
 })
 export class AgendaComponent implements OnInit {
+  private service = inject(AgendaService);
+  private auth = inject(AuthService);
+  private situacaoService = inject(SituacaoService);
+  private router = inject(Router);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+  private cdr = inject(ChangeDetectorRef);
+
+  loggedIn$ = this.auth.loggedIn$;
+
   eventos: Agenda[] = [];
+  situacoes: Situacao[] = [];
   page = 0;
-  totalPages = 0;
+  totalElements = 0;
+  readonly pageSize = 9;
   loading = false;
   showModal = false;
-  showDeleteModal = false;
   editingId: number | null = null;
-  deleteTargetId: number | null = null;
   error = '';
+  searchNome = '';
 
   form: Agenda = this.emptyForm();
 
-  constructor(private service: AgendaService) {}
-
-  ngOnInit() { this.load(); }
-
-  load() {
-    this.loading = true;
-    this.service.findAll(this.page).subscribe({
-      next: r => {
-        const key = Object.keys(r._embedded)[0];
-        this.eventos = r._embedded[key] ?? [];
-        this.totalPages = r.page.totalPages;
-        this.loading = false;
-      },
-      error: () => { this.eventos = []; this.loading = false; }
+  ngOnInit() {
+    this.load();
+    this.situacaoService.findAll().subscribe({
+      next: s => { this.situacoes = s; this.cdr.markForCheck(); }
     });
   }
 
-  pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i);
+  load() {
+    this.loading = true;
+    const obs = this.searchNome.trim()
+      ? this.service.findByNome(this.searchNome.trim(), this.page, this.pageSize)
+      : this.service.findAll(this.page, this.pageSize);
+
+    obs.subscribe({
+      next: r => {
+        const key = r._embedded ? Object.keys(r._embedded)[0] : null;
+        this.eventos = key ? r._embedded[key] ?? [] : [];
+        this.totalElements = r.page?.totalElements ?? 0;
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.eventos = [];
+        this.loading = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
-  goTo(p: number) { this.page = p; this.load(); }
+  search() {
+    this.page = 0;
+    this.load();
+  }
+
+  clearSearch() {
+    this.searchNome = '';
+    this.page = 0;
+    this.load();
+  }
+
+  goToAlbum(id: number) {
+    this.router.navigate(['/agenda', id, 'album']);
+  }
+
+  onPageChange(event: any) {
+    this.page = event.page;
+    this.load();
+  }
 
   openCreate() {
     this.form = this.emptyForm();
@@ -55,7 +114,10 @@ export class AgendaComponent implements OnInit {
   }
 
   openEdit(e: Agenda) {
-    this.form = { ...e };
+    this.form = {
+      ...e,
+      dataEvento: e.dataEvento ? String(e.dataEvento).substring(0, 10) : ''
+    };
     this.editingId = e.id ?? null;
     this.showModal = true;
     this.error = '';
@@ -67,20 +129,34 @@ export class AgendaComponent implements OnInit {
       : this.service.create(this.form);
 
     obs.subscribe({
-      next: () => { this.showModal = false; this.load(); },
-      error: () => { this.error = 'Erro ao salvar o evento.'; }
+      next: () => {
+        this.showModal = false;
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Evento salvo com sucesso.' });
+        this.load();
+      },
+      error: () => {
+        this.error = 'Erro ao salvar o evento.';
+        this.cdr.markForCheck();
+      }
     });
   }
 
   confirmDelete(id: number) {
-    this.deleteTargetId = id;
-    this.showDeleteModal = true;
-  }
-
-  doDelete() {
-    if (this.deleteTargetId == null) return;
-    this.service.delete(this.deleteTargetId).subscribe({
-      next: () => { this.showDeleteModal = false; this.deleteTargetId = null; this.load(); }
+    this.confirmationService.confirm({
+      message: 'Tem certeza que deseja excluir este evento?',
+      header: 'Confirmar exclusão',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.service.delete(id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Evento excluído.' });
+            this.load();
+          }
+        });
+      }
     });
   }
 
@@ -90,9 +166,40 @@ export class AgendaComponent implements OnInit {
     return months[m] ?? '';
   }
 
+  friendlyDate(date: string): string {
+    if (!date) return '';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(date + 'T00:00:00');
+    const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+    if (diff === 0) return 'Hoje';
+    if (diff === 1) return 'Amanhã';
+    if (diff === -1) return 'Ontem';
+    if (diff > 1 && diff <= 7) return `Em ${diff} dias`;
+    if (diff < -1 && diff >= -7) return `Há ${Math.abs(diff)} dias`;
+    return date.substring(0, 10);
+  }
+
+  situacaoClass(descricao?: string): string {
+    switch (descricao) {
+      case 'Aguardando': return 'evento-aguardando';
+      case 'Adiado':     return 'evento-adiado';
+      case 'Finalizado': return 'evento-finalizado';
+      case 'Cancelado':  return 'evento-cancelado';
+      default:           return '';
+    }
+  }
+
+  situacaoSeverity(descricao?: string): 'info' | 'warn' | 'success' | 'danger' | 'secondary' {
+    switch (descricao) {
+      case 'Aguardando': return 'info';
+      case 'Adiado':     return 'warn';
+      case 'Finalizado': return 'success';
+      case 'Cancelado':  return 'danger';
+      default:           return 'secondary';
+    }
+  }
+
   private emptyForm(): Agenda {
     return { nome: '', dataEvento: '', descricao: '' };
   }
 }
-
-

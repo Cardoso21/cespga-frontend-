@@ -1,31 +1,35 @@
 <div class="login-page">
-  <div class="login-card">
-    <div class="logo">
-      <div class="logo-icon">✦</div>
-      <h1>CESPGA</h1>
-      <p>Centro Espírita</p>
-    </div>
+  <p-card class="login-card">
+    <ng-template pTemplate="header">
+      <div class="logo">
+        <img src="logo.jpeg" alt="CESPGA" class="logo-img" />
+        <p>Centro Espírita Pai Guine de Aruanda</p>
+      </div>
+    </ng-template>
 
-    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+    @if (error) {
+      <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+    }
 
     <form (ngSubmit)="submit()">
-      <div class="form-group">
-        <label>Usuário</label>
-        <input type="text" [(ngModel)]="username" name="username" placeholder="Digite seu usuário" required />
+      <div class="field">
+        <label for="username">Usuário</label>
+        <input id="username" type="text" pInputText [(ngModel)]="username" name="username"
+               placeholder="Digite seu usuário" class="w-full" required />
       </div>
-      <div class="form-group">
-        <label>Senha</label>
-        <input type="password" [(ngModel)]="password" name="password" placeholder="Digite sua senha" required />
+      <div class="field">
+        <label for="password">Senha</label>
+        <p-password id="password" [(ngModel)]="password" name="password"
+                    placeholder="Digite sua senha" [feedback]="false" [toggleMask]="true"
+                    styleClass="w-full" inputStyleClass="w-full" />
       </div>
 
-      <button type="submit" class="btn btn-primary w-full" [disabled]="loading">
-        {{ loading ? 'Entrando...' : 'Entrar' }}
-      </button>
+      <p-button type="submit" [label]="loading ? 'Entrando...' : 'Entrar'"
+                styleClass="w-full mt-2" [loading]="loading" />
     </form>
 
-    <div class="forgot-link">
+    <div class="forgot-link mt-3">
       <a routerLink="/forgot-password">Esqueci minha senha</a>
     </div>
-  </div>
+  </p-card>
 </div>
-

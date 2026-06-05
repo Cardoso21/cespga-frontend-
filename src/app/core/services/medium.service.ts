@@ -20,6 +20,11 @@ export class MediumService {
     return this.http.get<PagedResponse<Medium>>(`${this.url}/findByNome/${nome}`, { params });
   }
 
+  findByCargo(cargoId: number, page = 0, size = 12): Observable<PagedResponse<Medium>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PagedResponse<Medium>>(`${this.url}/findByCargo/${cargoId}`, { params });
+  }
+
   findById(id: number): Observable<Medium> {
     return this.http.get<Medium>(`${this.url}/${id}`);
   }

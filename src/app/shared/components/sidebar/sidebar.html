@@ -1,7 +1,13 @@
-<aside class="sidebar" [class.collapsed]="collapsed">
+@if (mobileOpen) {
+  <div class="mobile-overlay" (click)="closeMobile()"></div>
+}
+
+<aside class="sidebar" [class.collapsed]="collapsed" [class.mobile-open]="mobileOpen">
   <div class="sidebar-header">
-    <div class="logo-mark">✦</div>
-    <span class="logo-text" *ngIf="!collapsed">CESPGA</span>
+    <img src="logo.jpeg" alt="CESPGA" class="logo-img" />
+    @if (!collapsed) {
+      <span class="logo-text">CESPGA</span>
+    }
     <button class="toggle-btn" (click)="toggleCollapse()">
       <i [class]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"></i>
     </button>
@@ -10,27 +16,33 @@
   <nav class="sidebar-nav">
     <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
       <i class="pi pi-home"></i>
-      <span *ngIf="!collapsed">Dashboard</span>
+      @if (!collapsed) { <span>Dashboard</span> }
     </a>
-    <a routerLink="/mediuns" routerLinkActive="active" class="nav-item">
-      <i class="pi pi-users"></i>
-      <span *ngIf="!collapsed">Médiuns</span>
-    </a>
+    @if (loggedIn$ | async) {
+      <a routerLink="/mediuns" routerLinkActive="active" class="nav-item">
+        <i class="pi pi-users"></i>
+        @if (!collapsed) { <span>Médiuns</span> }
+      </a>
+    }
     <a routerLink="/agenda" routerLinkActive="active" class="nav-item">
       <i class="pi pi-calendar"></i>
-      <span *ngIf="!collapsed">Agenda</span>
+      @if (!collapsed) { <span>Agenda</span> }
     </a>
-    <a routerLink="/cargos" routerLinkActive="active" class="nav-item">
-      <i class="pi pi-briefcase"></i>
-      <span *ngIf="!collapsed">Cargos</span>
+    <a routerLink="/fotos" routerLinkActive="active" class="nav-item">
+      <i class="pi pi-images"></i>
+      @if (!collapsed) { <span>Fotos</span> }
     </a>
+    @if (loggedIn$ | async) {
+      <a routerLink="/cargos" routerLinkActive="active" class="nav-item">
+        <i class="pi pi-briefcase"></i>
+        @if (!collapsed) { <span>Cargos</span> }
+      </a>
+      <a routerLink="/usuarios" routerLinkActive="active" class="nav-item">
+        <i class="pi pi-shield"></i>
+        @if (!collapsed) { <span>Usuários</span> }
+      </a>
+    }
   </nav>
 
-  <div class="sidebar-footer">
-    <button class="nav-item logout-btn" (click)="logout()">
-      <i class="pi pi-sign-out"></i>
-      <span *ngIf="!collapsed">Sair</span>
-    </button>
-  </div>
 </aside>
 

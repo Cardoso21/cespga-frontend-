@@ -3,8 +3,124 @@
   min-height: 100vh;
 }
 
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .main-content {
   flex: 1;
   overflow-y: auto;
   background: var(--bg);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.6rem 1.5rem;
+  background: #c7dcf8;
+  border-bottom: 1px solid rgba(85,156,238,0.2);
+  box-shadow: 0 1px 4px rgba(85,156,238,0.15);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #559cee, #1d4ed8);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.05em;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.topbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i { font-size: 0.9rem; }
+}
+
+.logout-btn {
+  background: rgba(220,38,38,0.08);
+  color: #dc2626;
+  margin-left: 0.75rem;
+  &:hover { background: rgba(220,38,38,0.16); }
+}
+
+.login-btn {
+  background: var(--primary);
+  color: white;
+  &:hover { background: var(--primary-dark); }
+}
+
+.mobile-header {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(90deg, #559cee 0%, #c7dcf8 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: var(--primary-dark);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.mobile-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  letter-spacing: 0.1em;
 }

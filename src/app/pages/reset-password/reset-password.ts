@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CardModule } from 'primeng/card';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [NgIf, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, CardModule, PasswordModule, ButtonModule, MessageModule],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss',
 })
@@ -45,4 +48,3 @@ export class ResetPasswordComponent implements OnInit {
     });
   }
 }
-

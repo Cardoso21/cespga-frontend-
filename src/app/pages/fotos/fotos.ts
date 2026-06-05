@@ -1,38 +1,35 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DialogModule } from 'primeng/dialog';
-import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { CardModule } from 'primeng/card';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { AgendaService } from '../../core/services/agenda.service';
 import { AuthService } from '../../core/services/auth.service';
 import { FotoEvento } from '../../core/models/agenda.model';
 
 @Component({
-  selector: 'app-album',
+  selector: 'app-fotos',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AsyncPipe, FormsModule, ButtonModule, InputTextModule, DialogModule, ToastModule, ProgressSpinnerModule, ConfirmDialogModule, CardModule],
-  templateUrl: './album.html',
-  styleUrl: './album.scss',
+  imports: [AsyncPipe, FormsModule, CardModule, ButtonModule, InputTextModule, ProgressSpinnerModule, ToastModule, ConfirmDialogModule],
+  templateUrl: './fotos.html',
+  styleUrl: './fotos.scss',
 })
-export class AlbumComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+export class FotosComponent implements OnInit {
   private service = inject(AgendaService);
   private auth = inject(AuthService);
+  private router = inject(Router);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private cdr = inject(ChangeDetectorRef);
 
   loggedIn$ = this.auth.loggedIn$;
 
-  agendaId!: number;
   fotos: FotoEvento[] = [];
   loading = false;
   uploading = false;
@@ -40,14 +37,11 @@ export class AlbumComponent implements OnInit {
   descricao = '';
   lightboxUrl: string | null = null;
 
-  ngOnInit() {
-    this.agendaId = +this.route.snapshot.paramMap.get('id')!;
-    this.load();
-  }
+  ngOnInit() { this.load(); }
 
   load() {
     this.loading = true;
-    this.service.listarFotos(this.agendaId).subscribe({
+    this.service.listarTodasFotos().subscribe({
       next: f => {
         this.fotos = f;
         this.loading = false;
@@ -69,7 +63,7 @@ export class AlbumComponent implements OnInit {
   upload() {
     if (!this.selectedFile) return;
     this.uploading = true;
-    this.service.uploadFoto(this.agendaId, this.selectedFile, this.descricao).subscribe({
+    this.service.uploadFotoGeral(this.selectedFile, this.descricao).subscribe({
       next: () => {
         this.uploading = false;
         this.selectedFile = null;
@@ -79,10 +73,6 @@ export class AlbumComponent implements OnInit {
       },
       error: () => { this.uploading = false; }
     });
-  }
-
-  goBack() {
-    this.router.navigate(['/agenda']);
   }
 
   openLightbox(url: string) {
@@ -100,7 +90,7 @@ export class AlbumComponent implements OnInit {
       accept: () => {
         this.service.deletarFoto(id).subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Foto excluída.' });
+            this.messageService.add({ severity: 'success', summary: 'Foto excluída.' });
             this.load();
           }
         });

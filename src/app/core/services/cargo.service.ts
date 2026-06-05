@@ -21,4 +21,12 @@ export class CargoService {
   create(cargo: Cargo): Observable<Cargo> {
     return this.http.post<Cargo>(this.url, cargo);
   }
+
+  update(cargo: Cargo): Observable<Cargo> {
+    return this.http.put<Cargo>(this.url, cargo);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
+  }
 }
