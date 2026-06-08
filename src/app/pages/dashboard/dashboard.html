@@ -63,6 +63,38 @@
     </p-card>
   }
 
+  @if (loadingOrixa) {
+    <p-card styleClass="mt-2 orixa-destaque-card">
+      <div class="skeleton-evento">
+        <p-skeleton shape="circle" size="3.5rem" />
+        <div class="skeleton-evento-info">
+          <p-skeleton width="10rem" height="1.2rem" styleClass="mb-2" />
+          <p-skeleton width="100%" height="0.9rem" styleClass="mb-1" />
+          <p-skeleton width="80%" height="0.9rem" />
+        </div>
+      </div>
+    </p-card>
+  } @else if (orixaDestaque) {
+    <a routerLink="/orixas" class="orixa-destaque-link">
+      <p-card styleClass="mt-2 orixa-destaque-card" header="Orixá do mês">
+        <div class="orixa-destaque">
+          <div class="orixa-destaque-photo">
+            @if (orixaDestaque.imagemUrl) {
+              <img [src]="orixaDestaque.imagemUrl" [alt]="'Imagem de ' + orixaDestaque.nome" loading="lazy" />
+            } @else {
+              <i class="pi pi-sun"></i>
+            }
+          </div>
+          <div>
+            <div class="orixa-destaque-nome">{{ orixaDestaque.nome }}</div>
+            <p class="orixa-destaque-historia">{{ orixaDestaque.historia | slice:0:220 }}{{ orixaDestaque.historia.length > 220 ? '…' : '' }}</p>
+            <span class="orixa-destaque-link-label">Conhecer todos os orixás <i class="pi pi-arrow-right"></i></span>
+          </div>
+        </div>
+      </p-card>
+    </a>
+  }
+
   <div class="quick-links mt-2">
     @if (loggedIn$ | async) {
       <a routerLink="/mediuns" class="quick-link-card ql-mediuns">

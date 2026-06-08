@@ -94,14 +94,8 @@
   align-items: flex-end;
 }
 
-.empty-photos {
+.empty-grid-span {
   grid-column: 1 / -1;
-  text-align: center;
-  padding: 4rem 2rem;
-
-  i { font-size: 3.5rem; display: block; margin-bottom: 1rem; opacity: 0.35; color: var(--primary); }
-  .empty-title { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
-  .empty-sub { font-size: 0.875rem; color: var(--text-light); }
 }
 
 .lightbox {

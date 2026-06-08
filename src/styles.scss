@@ -7,6 +7,8 @@
   --primary-light: #60a5fa;
   --primary-dark: #1d4ed8;
   --accent: #d4af37;
+  --accent-light: #f3e3b3;
+  --accent-dark: #a9821f;
   --bg: #f0f6ff;
   --surface: #ffffff;
   --text: #1e293b;
@@ -15,6 +17,7 @@
   --success: #16a34a;
   --radius: 12px;
   --shadow: 0 4px 24px rgba(37, 99, 235, 0.1);
+  --font-heading: 'Playfair Display', 'Segoe UI', serif;
 }
 
 body {
@@ -28,7 +31,26 @@ body {
 
 .page-header {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;
-  h1 { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); }
+
+  h1 {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    position: relative;
+    padding-bottom: 0.4rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 48px;
+      height: 3px;
+      border-radius: 99px;
+      background: var(--accent);
+    }
+  }
 }
 
 /* PrimeNG global overrides */
@@ -78,6 +100,34 @@ textarea:focus {
 @keyframes pageFadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Estado vazio — usado em listas/grids sem itens */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 2rem;
+
+  i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    margin-bottom: 1.25rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(212,175,55,0.12));
+    color: var(--primary);
+    font-size: 2rem;
+    animation: emptyFloat 3s ease-in-out infinite;
+  }
+
+  .empty-title { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; font-family: var(--font-heading); }
+  .empty-sub { font-size: 0.875rem; color: var(--text-light); max-width: 360px; margin: 0 auto; }
+}
+
+@keyframes emptyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 /* Scrollbar customizada */
