@@ -32,6 +32,10 @@
       <i class="pi pi-images"></i>
       @if (!collapsed) { <span>Fotos</span> }
     </a>
+    <a routerLink="/orixas" routerLinkActive="active" class="nav-item">
+      <i class="pi pi-sun"></i>
+      @if (!collapsed) { <span>Orixás</span> }
+    </a>
     @if (loggedIn$ | async) {
       <a routerLink="/cargos" routerLinkActive="active" class="nav-item">
         <i class="pi pi-briefcase"></i>

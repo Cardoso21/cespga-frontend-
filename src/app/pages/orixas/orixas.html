@@ -1,0 +1,96 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="page-container">
+  <div class="page-header">
+    <h1>Orixás</h1>
+    @if (loggedIn$ | async) {
+      <p-button label="Novo orixá" icon="pi pi-plus" (onClick)="openCreate()" />
+    }
+  </div>
+
+  <p class="page-intro">Conheça a história de cada orixá cultuado em nossa casa.</p>
+
+  @if (loading) {
+    <div class="orixas-grid">
+      @for (i of [1, 2, 3]; track i) {
+        <p-card styleClass="orixa-card">
+          <div class="orixa-skeleton"></div>
+        </p-card>
+      }
+    </div>
+  } @else if (orixas.length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-sun"></i>
+      <p class="empty-title">Nenhum orixá cadastrado</p>
+      <p class="empty-sub">
+        @if (loggedIn$ | async) {
+          Clique em "Novo orixá" para começar.
+        } @else {
+          Em breve teremos histórias para compartilhar aqui.
+        }
+      </p>
+    </div>
+  } @else {
+    <div class="orixas-grid">
+      @for (o of orixas; track o.id) {
+        <p-card styleClass="orixa-card">
+          <div class="orixa-photo">
+            @if (o.imagemUrl) {
+              <img [src]="o.imagemUrl" [alt]="'Imagem de ' + o.nome" loading="lazy" />
+            } @else {
+              <div class="orixa-photo-placeholder">
+                <i class="pi pi-image"></i>
+              </div>
+            }
+          </div>
+          <div class="orixa-body">
+            <h2 class="orixa-nome">{{ o.nome }}</h2>
+            <p class="orixa-historia" [class.expanded]="expandedId === o.id">{{ o.historia }}</p>
+            <button type="button" class="orixa-toggle" (click)="toggleHistoria(o.id!)">
+              {{ expandedId === o.id ? 'Ler menos' : 'Ler mais' }}
+            </button>
+          </div>
+          @if (loggedIn$ | async) {
+            <div class="orixa-actions">
+              <p-button icon="pi pi-pencil" severity="secondary" [outlined]="true" size="small" pTooltip="Editar" tooltipPosition="top" (onClick)="openEdit(o)" />
+              <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small" pTooltip="Excluir" tooltipPosition="top" (onClick)="confirmDelete(o.id!)" />
+            </div>
+          }
+        </p-card>
+      }
+    </div>
+  }
+</div>
+
+<p-dialog
+  [(visible)]="showModal"
+  [header]="editingId ? 'Editar Orixá' : 'Novo Orixá'"
+  [modal]="true"
+  [style]="{ width: '520px' }"
+  [draggable]="false"
+>
+  @if (error) {
+    <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+  }
+
+  <div class="field">
+    <label>Nome *</label>
+    <input pInputText [(ngModel)]="form.nome" placeholder="Ex: Oxalá, Iemanjá, Xangô..." class="w-full" />
+  </div>
+
+  <div class="field">
+    <label>Link da imagem</label>
+    <input pInputText [(ngModel)]="form.imagemUrl" placeholder="https://..." class="w-full" />
+  </div>
+
+  <div class="field">
+    <label>História *</label>
+    <textarea pTextarea [(ngModel)]="form.historia" rows="6" class="w-full" placeholder="Conte a história deste orixá..."></textarea>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="showModal = false" />
+    <p-button [label]="editingId ? 'Atualizar' : 'Salvar'" icon="pi pi-check" (onClick)="save()" />
+  </ng-template>
+</p-dialog>

@@ -37,6 +37,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/fotos/fotos').then(m => m.FotosComponent)
       },
       {
+        path: 'orixas',
+        loadComponent: () => import('./pages/orixas/orixas').then(m => m.OrixasComponent)
+      },
+      {
         path: 'agenda/:id/album',
         loadComponent: () => import('./pages/album/album').then(m => m.AlbumComponent)
       },
