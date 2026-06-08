@@ -1,6 +1,6 @@
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .content-wrapper {
@@ -8,11 +8,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 
 .main-content {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
   background: var(--bg);
 }
 
