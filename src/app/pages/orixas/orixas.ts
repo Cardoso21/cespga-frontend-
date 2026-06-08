@@ -45,7 +45,6 @@ export class OrixasComponent implements OnInit {
 
   orixas: Orixa[] = [];
   loading = false;
-  expandedId: number | null = null;
 
   showModal = false;
   editingId: number | null = null;
@@ -68,10 +67,6 @@ export class OrixasComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
-  }
-
-  toggleHistoria(id: number) {
-    this.expandedId = this.expandedId === id ? null : id;
   }
 
   openCreate() {

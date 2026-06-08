@@ -46,10 +46,7 @@
           </div>
           <div class="orixa-body">
             <h2 class="orixa-nome">{{ o.nome }}</h2>
-            <p class="orixa-historia" [class.expanded]="expandedId === o.id">{{ o.historia }}</p>
-            <button type="button" class="orixa-toggle" (click)="toggleHistoria(o.id!)">
-              {{ expandedId === o.id ? 'Ler menos' : 'Ler mais' }}
-            </button>
+            <p class="orixa-historia">{{ o.historia }}</p>
           </div>
           @if (loggedIn$ | async) {
             <div class="orixa-actions">

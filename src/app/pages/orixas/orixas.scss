@@ -5,16 +5,17 @@
 
 .orixas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
   gap: 1.5rem;
 }
 
 .orixa-photo {
   width: 100%;
+  max-width: 360px;
   aspect-ratio: 4 / 3;
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin: 0 auto 1rem;
   background: #f1f5f9;
 
   img {
@@ -45,32 +46,10 @@
 
 .orixa-historia {
   color: var(--text);
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.6;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   white-space: pre-line;
-
-  &.expanded {
-    -webkit-line-clamp: unset;
-    overflow: visible;
-  }
-}
-
-.orixa-toggle {
-  margin-top: 0.5rem;
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--primary);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-
-  &:hover { text-decoration: underline; }
 }
 
 .orixa-actions {
