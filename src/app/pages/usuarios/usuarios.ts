@@ -113,6 +113,12 @@ export class UsuariosComponent implements OnInit {
       this.cdr.markForCheck();
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.form.username)) {
+      this.error = 'O e-mail informado não é válido.';
+      this.cdr.markForCheck();
+      return;
+    }
     this.saving = true;
     this.error = '';
     this.service.create(this.form).subscribe({
